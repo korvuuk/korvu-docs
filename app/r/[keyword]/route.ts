@@ -20,8 +20,12 @@ export async function GET(
     .eq('active', true)
     .maybeSingle()
 
-  if (error || !data) {
-    return new Response('Document not found', { status: 404 })
+  if (error) {
+    return Response.json({ error: error.message, code: error.code, tenant: TENANT_ID, keyword }, { status: 500 })
+  }
+
+  if (!data) {
+    return Response.json({ error: 'not found', tenant: TENANT_ID, keyword }, { status: 404 })
   }
 
   return Response.redirect(data.file_url, 302)
