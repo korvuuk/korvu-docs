@@ -2,7 +2,7 @@ export const dynamic = 'force-dynamic'
 
 import { createServiceClient } from '@/lib/supabase'
 
-const TENANT_ID = process.env.KORVU_TENANT_ID ?? '00000000-0000-0000-0000-000000000001'
+const TENANT_ID = (process.env.KORVU_TENANT_ID ?? '00000000-0000-0000-0000-000000000001').trim()
 
 export async function GET(
   _request: Request,
@@ -20,12 +20,8 @@ export async function GET(
     .eq('active', true)
     .maybeSingle()
 
-  if (error) {
-    return Response.json({ error: error.message, code: error.code, tenant: TENANT_ID, keyword }, { status: 500 })
-  }
-
-  if (!data) {
-    return Response.json({ error: 'not found', tenant: TENANT_ID, keyword }, { status: 404 })
+  if (error || !data) {
+    return new Response('Not found', { status: 404 })
   }
 
   return Response.redirect(data.file_url, 302)
